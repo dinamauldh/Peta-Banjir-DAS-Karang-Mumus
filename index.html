@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="./resources/ol.css">
+    <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+    <link rel="stylesheet" type="text/css" href="resources/horsey.min.css">
+    <link rel="stylesheet" type="text/css" href="resources/ol3-search-layer.min.css">
+    <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+    <link rel="stylesheet" href="./resources/qgis2web.css">
+    <title>Peta Tingkat Kerawanan Banjir DAS Karang Mumus</title>
+    <style>
+        html, body {
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        header {
+            background-color: #578FCA;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            font-family: 'Roboto', sans-serif;
+        }
+
+
+
+        #map {
+            width: 100%;
+            height: calc(100% - 80px); /* Mengurangi tinggi header */
+            margin-bottom: 40px;
+            padding: 0;
+        }
+
+        .ol-control > * {
+            background-color: #3674B5!important;
+            color: rgb(202, 214, 236)!important;
+            border-radius: 0px;
+        }
+        <!-- icon
+        .ol-attribution a, .gcd-gl-input::placeholder, .search-layer-input-search::placeholder {
+            color: #FFFF!important;
+        }
+
+        <!-- input searching
+        .search-layer-input-search {
+            background-color: #3674B5!important;
+            
+        }
+
+        .ol-control > *:focus, .ol-control >*:hover {
+            background-color: rgba(248, 248, 248, 0.7)!important;
+        }
+
+        .ol-control {
+            background-color: #FFFF!important;
+            padding: 2px !important;
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>PETA TINGKAT KERAWANAN BANJIR DAS KARANG MUMUS</header>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div style="display: flex; align-items: center;">
+                    <img class="logo-unmul" src="./images/unmul.png" alt="Logo Unmul">
+                    <p class="footer-text">Universitas Mulawarman - Fakultas Teknik - Program Studi Informatika</p>
+                </div>
+                <p class="copyright-text">Copyright © Nurmedina Maulidiah</p>
+            </div>
+        </footer>
+        
+        
+    
+        <style>
+            footer {
+                background-color: #578FCA;
+                color: white;
+                text-align: center;
+                padding: 10px 20px;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                height: 60px; /* Menambah tinggi agar cukup untuk dua baris teks */
+                font-family: 'Roboto', sans-serif;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .footer-content {
+                display: flex;
+                flex-direction: column; /* Agar tulisan berada di bawah logo */
+                align-items: center;
+            }
+            
+            .footer-text {
+                font-size: 15px; /* Ukuran tulisan utama */
+                margin: 0;
+            }
+            
+            .copyright-text {
+                font-size: 12px; /* Ukuran tulisan copyright lebih kecil */
+                margin: 0;
+                margin-top: 0px; /* Jarak sedikit dari tulisan utama */
+            }
+            
+            .logo-unmul {
+                height: 30px;
+                margin-right: 10px;
+            }
+             
+        </style>
+        
+        
+    <!-- Peta -->
+    <div id="map">
+        <div id="popup" class="ol-popup">
+            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+            <div id="popup-content"></div>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script src="resources/qgis2web_expressions.js"></script>
+    <script src="./resources/functions.js"></script>
+    <script src="./resources/ol.js"></script>
+    <script src="resources/horsey.min.js"></script>
+    <script src="resources/ol3-search-layer.js"></script>
+    <script src="./resources/ol-layerswitcher.js"></script>
+    <script src="layers/PetaKerawananBanjirDASKarangMumus_1.js"></script>
+    <script src="layers/KelurahanKecamatanDASKarangMumus_2.js"></script>
+    <script src="styles/PetaKerawananBanjirDASKarangMumus_1_style.js"></script>
+    <script src="styles/KelurahanKecamatanDASKarangMumus_2_style.js"></script>
+    <script src="./layers/layers.js" type="text/javascript"></script>
+    <script src="./resources/Autolinker.min.js"></script>
+    <script src="./resources/qgis2web.js"></script>
+
+    <script>
+        // Tunggu hingga seluruh elemen peta dimuat
+        window.onload = function() {
+            // Mengubah ukuran tombol zoom (+ dan -)
+            const zoomButtons = document.querySelectorAll('.ol-zoom button');
+            zoomButtons.forEach(button => {
+                button.style.width = '40px';
+                button.style.height = '40px';
+                button.style.fontSize = '18px';
+                button.style.lineHeight = '40px';
+                button.style.backgroundColor = '#005f73';
+                button.style.color = 'white';
+                button.style.borderRadius = '8px';
+                button.style.display = 'flex';
+                button.style.justifyContent = 'center';
+                button.style.alignItems = 'center';
+            });
+    
+            // Mengubah ukuran tombol kontrol lain (misalnya pencarian)
+            const controlButtons = document.querySelectorAll('.ol-control button, .gcd-gl-control button');
+            controlButtons.forEach(button => {
+                button.style.width = '40px';
+                button.style.height = '40px';
+                button.style.fontSize = '18px';
+                button.style.lineHeight = '40px';
+                button.style.backgroundColor = '#005f73';
+                button.style.color = 'white';
+                button.style.borderRadius = '8px';
+                button.style.display = 'flex';
+                button.style.justifyContent = 'center';
+                button.style.alignItems = 'center';
+            });
+    
+            // Mengubah ukuran kotak pencarian
+            const searchInputs = document.querySelectorAll('.search-layer-input-search');
+            searchInputs.forEach(input => {
+                input.style.fontSize = '16px';
+                input.style.padding = '8px';
+                input.style.height = '20px';
+                input.style.borderRadius = '8px';
+                input.style.backgroundColor = '#3674B5'; 
+            });
+    
+            // Mengubah ukuran tombol pada layer switcher
+            const layerSwitcherButtons = document.querySelectorAll('.ol-layerswitcher button');
+            layerSwitcherButtons.forEach(button => {
+                button.style.width = '40px';
+                button.style.height = '40px';
+                button.style.fontSize = '16px';
+                button.style.backgroundColor = '#005f73';
+                button.style.color = 'white';
+                button.style.borderRadius = '8px';
+                button.style.display = 'flex';
+                button.style.justifyContent = 'center';
+                button.style.alignItems = 'center';
+            });
+    
+        };
+    </script>
+    
+    
+</body>
+</html>
